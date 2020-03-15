@@ -1,0 +1,274 @@
+<html>
+
+<head></head>
+<title>Auto-Rickshaw Tracking System</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="design.css" />
+<script>
+	$(document).ready(function(){
+    $("#myToast").toast('show');
+});
+</script>
+<style>
+	/* Set the size of the div element that contains the map */
+	#map {
+		height: 75%;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+		/* The height is 400 pixels */
+		width: 75%;
+		/* The width is the width of the web page */
+		position: fixed !important;
+        
+    margin-top: 30px;
+    background-color: rgba(255,255,255,.85)!important;
+    border: 10px solid rgba(255,255,255,.85)!important;
+    border-radius: .3rem!important;
+	}
+
+	body {
+		background-color: url('https://970-dot-9940080-dot-devshell.appspot.com/files/download/?id=d3219516-c950-4bdc-b34f-f7bf9db50a49');
+
+		padding: 1em
+	}
+	.color-white {
+		color: lightgray;
+		text-align: center
+	}
+
+	.fixed-pos {
+		position: fixed !important;
+
+	}
+
+	.auto-legend {
+		width: 20px;
+		height: 40px;
+		margin: 5px;
+	}
+
+	.toast {
+		max-width: 260px;
+		float: right;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+		margin-top: 16px;
+	}
+    .card{
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+    #notifcation-panel{
+        margin-top:12px;
+    }
+    .header{
+        margin: 0 0;
+    }
+    .toast
+    {
+        width:260px!important;
+    }
+   
+</style>
+
+<body>
+	<div class="row header">
+		<div class="col-12 card" style="background-color:#004d4d; padding:5px;">
+			<h4 class="color-white" style="color:orange">Welcome to Auto-Rickshaw Tracking System</h4>
+			<!--The div element for the map -->
+			<div class="color-white" style="display: flex; justify-content: center;">
+				<div><img class="auto-legend"
+        src="https://storage.cloud.google.com/staging.chat-application-240408.appspot.com/images_map/up_red.png" width="75px" height="52px"/>
+					<span>Filled Autorickshaw</span></div>
+				<div><img class="auto-legend"
+        src="https://storage.cloud.google.com/staging.chat-application-240408.appspot.com/images_map/up_yellow.png"  width="75px" height="52px"/>
+					<span>Vacant Autorickshaw</span></div>
+
+			</div>
+		</div>
+
+	</div>
+
+	<div class="row">
+		<div class="col-8 ">
+			<div id="map" class="img-thumbnail"></div>
+		</div>
+		<div class="col-4 ">
+			<div>
+				<div style="">
+					<!-- Position toasts -->
+					<div id="notifcation-panel">
+
+						<div class="toast fade show">
+							<div class="toast-header" style="color:#004d4d">
+								<strong class="mr-auto"><i class="fa fa-globe"></i> Auto Tracking</strong>
+								<small class="text-muted">5 minutes ago</small>
+								<button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+							</div>
+							<div class="toast-body">
+								{{vacant_auto}}-Vacant & {{filled_auto}}-Filled autos are coming towards you
+							</div>
+						</div>
+
+						{% for auto in near_by_auto %}
+						<div class="toast fade show">
+							<div class="toast-header" style="color:#004d4d">
+								<strong class="mr-auto"><i class="fa fa-globe"></i> Auto Tracking</strong>
+
+								<small class="text-muted">{{ auto.time_to_reach}} minutes ago</small>
+								<button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+							</div>
+							<div class="toast-body">
+								{%if auto.distance == "0" %}
+								{%if auto.availability == "Vacant"%}
+								A vacant Auto is at your location, Aboard!!
+								{%else%}
+								Oops!! The auto at you location is occupied. Wait for the next one!!
+								{%endif%}
+								{%else%}
+								{%if auto.availability == "Vacant"%}
+								A Vacant auto is {{auto.distance}} m away, Wait!!
+								{%else%}
+								An occupied auto is {{auto.distance}} m away, Wait!!
+								{%endif%}
+								{%endif%}
+
+							</div>
+						</div>
+						{%endfor%}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script>
+		// Initialize and add the map
+function initMap() {
+  // The location of Uluru
+  // The map, centered at Uluru
+  var iit = {lat: 19.131584, lng: 72.915282};
+
+  var map = new google.maps.Map(
+      document.getElementById('map'), {zoom: 17, center: iit});
+  // The marker, positioned at Uluru
+  var marker1 = new google.maps.Marker({position: iit, map: map});
+    var iit1 = {lat: 19.3334, lng: 72.7133};
+
+    var marker2 = new google.maps.Marker({position: iit1, map: map});
+    debugger
+    var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+
+  //{% for key in data_rfid %}
+  //var latitude = '{{key.latitude}}'
+  //var longitude = '{{key.longitude}}'
+  //var pos = {lat: parseFloat(latitude), lng: parseFloat(longitude)};
+  //var marker = new google.maps.Marker({position: pos, map: map,icon:image});
+  //{%endfor%}
+  var path = "{{path}}"
+  debugger;
+  auto_image_up_green = "https://storage.cloud.google.com/staging.chat-application-240408.appspot.com/images_map/up_yellow.png"
+  auto_image_up_red = "https://storage.cloud.google.com/staging.chat-application-240408.appspot.com/images_map/up_red.png"
+  auto_image_down_green="https://storage.cloud.google.com/staging.chat-application-240408.appspot.com/images_map/auto_down_yellow.png"
+  auto_image_down_red="https://storage.cloud.google.com/staging.chat-application-240408.appspot.com/images_map/down_red.png"
+
+
+  var dic = {}
+  {% for auto in data_auto %}
+  var latitude = '{{auto.latitude}}'
+  var longitude = '{{auto.longitude}}'
+  var auto_number = '{{auto.auto_number}}'
+  var availability = "{{auto.availability}}"
+  var currentLoc ='{{auto.current_rfid}}'
+  var lastLoc='{{auto.last_rfid}}'
+  var auto_image = ''
+  var direction=''
+  if(lastLoc=="None"){
+      if(currentLoc.split("_")[1]==1)
+      {
+          direction="Forward"
+      }
+  }
+  else
+  {
+      if(parseInt(currentLoc.split("_")[1])>=parseInt(lastLoc.split("_")[1]))
+      {
+          direction="Forward"
+      }
+      else
+      {
+          direction="Backward"
+      }
+  }
+
+
+
+
+  
+  if(availability=="Vacant"){
+      
+    if(direction=="Forward")
+    {
+        auto_image = auto_image_up_green
+    }
+    else
+    {
+        auto_image = auto_image_down_green
+    }
+
+  }
+  else
+  {
+    if(direction=="Forward")
+    {
+        auto_image = auto_image_up_red
+    }
+    else
+    {
+        auto_image = auto_image_down_red
+    }
+  }
+  
+
+
+  latitude = parseFloat(latitude)
+  longitude = parseFloat(longitude)
+  if (dic[latitude+"-"+longitude]==1){
+       latitude= latitude  * (Math.random() / 10000);
+       longitude= longitude * (Math.random() / 10000);
+      //latitude = latitude-0.11;
+  }
+  
+  dic[latitude+"-"+longitude] = 1
+  var pos = {lat:latitude, lng: longitude};
+  console.log(latitude+'==='+longitude)
+  var icon = {
+     url: auto_image,
+     scaledSize: new google.maps.Size(19, 39), // size 
+  };
+  var marker = new google.maps.Marker({position: pos,
+   map: map,
+   title: auto_number,
+   icon:icon,
+   
+   });
+  {%endfor%}
+
+}
+	</script>
+	<!--Load the API from the specified URL
+    * The async attribute allows the browser to render the page while the API loads
+    * The key parameter will contain your own API key (which is not needed for this tutorial)
+    * The callback parameter executes the initMap() function
+    -->
+	<script async defer
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAn-hwvPBkpyuuNviGSH2mxMM6Uuj4naeA&callback=initMap">
+	</script>
+
+
+</body>
+
+
+
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Admin Dashboard</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+		integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<style>
+		.btn-center {
+			text-align: center;
+		}
+
+		.mb-30 {
+			margin-bottom: 30px;
+		}
+
+		.vh-60 {
+			height: 60vh;
+		}
+
+		.vh-25 {
+			height: 25vh;
+		}
+
+		.mb-4 {
+			margin-bottom: 4vh;
+		}
+
+		.mt-30 {
+			margin-top: 30px;
+		}
+
+		.fa-plus {
+			border-radius: 500px;
+			border: 1px solid grey;
+			background: white;
+			margin-right: 4px;
+			padding: 2px;
+			color: #777;
+		}
+        .count{
+            border-radius: 100px;
+			border: 1px solid grey;
+			background: white;
+			padding: 20px;
+            margin-top: 20px;
+			color: #777;
+        }
+        body{
+            background-color:#2e3338!important;
+        }
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="row mb-30 mt-30">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header">Auto Display</div>
+					<div class="card-body">
+						<p class=" card-text">
+							<form id="update_auto" action="/admin_home" method="post">
+								<table class="table table-dark">
+									<tr>
+										<th>Auto Number</th>
+										<th>Auto Path</th>
+										<th>Current Location</th>
+										<th>New Location</th>
+										<th>Is Vacant</th>
+                                        <th>Delete</th>
+                                        
+									</tr>
+									{% for auto in data_auto %}
+									<tr>
+										<td>{{auto.auto_number}}</td>
+										<td>{{auto.path}}</td>
+										<td>{{auto.current_rfid}}</td>
+										<td>
+											<select name='{{auto.auto_number}}_rfid' value class="form-control">
+            <option value>Select</option>
+            {%for i in data_rfid%}    
+            <option value='{{i.rfid_name}}'>{{i.rfid_name}}</option>
+            {% endfor%}
+        </select>
+										</td>
+										<td>
+											<div>
+												{%if auto.availability == "Vacant"%}
+												<input type="radio" name="{{auto.auto_number}}_availability" value="Vacant" checked>Vacant<br>
+												<input type="radio" name="{{auto.auto_number}}_availability" value="Filled">Filled<br>
+            {%else%}
+												<input type="radio" name="{{auto.auto_number}}_availability" value="Vacant" >Vacant<br>
+												<input type="radio" name="{{auto.auto_number}}_availability" value="Filled" checked>Filled<br>
+            {%endif%}
+
+        </div>
+										</td>
+									<td>
+                                        <form action="/delete_auto" method="post">
+                                        <input type="text" name="auto_number" value="{{auto.auto_number}}" hidden>
+                                        <input type="submit"  name="submit" value="Delete" class="btn btn btn-danger"/>
+                                        </form>
+                                    </td>
+                                    </tr>
+									{% endfor%}
+								</table>
+								<div class="btn-center">
+									<input type="submit"  name="submit" value="submit" class="btn btn-dark"/>
+                            </div>
+
+							</form>
+
+						</p>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<div class="row">
+			<div class="col-3">
+				<div class="card">
+					<div class="card-header">
+						<i class="fas fa-plus"></i>
+						ADD RFID</div>
+					<div class="card-body vh-60">
+						<h5 class=" card-title">Enter Details</h5>
+						<p class=" card-text">
+							<form id="rfid" action="/add_rfid" method="post">
+								<input type="text" name="rfid_name" placeholder="Enter RFID Name" class="form-control" required>
+								<br>
+								<input type="text" name="rfid_location" placeholder="Enter RFID Location" class="form-control" required>
+								<br>
+								<input type="text" name="rfid_latitude" placeholder="Latitude" class="form-control" required>
+								<br>
+								<input type="text" name="rfid_longitude" placeholder="Longitude" class="form-control" required>
+								<br>
+								<div class="btn-center">
+									<input type="submit" value="Submit" class="btn btn-dark">
+                                </div>
+
+							</form>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-3">
+				<div class="card">
+					<div class="card-header">
+						<i class="fas fa-plus"></i>
+						ADD AUTO</div>
+					<div class=" card-body vh-60">
+						<h5 class=" card-title">Add Details</h5>
+						<p class=" card-text">
+							<form id="auto_add" action="/add_auto_new" method="post">
+
+								<input type="text" name="auto_number" placeholder="Enter Auto Number" required class="form-control">
+								<br>
+
+  Availability:<br>
+								<div class="form-check">
+									<label class="form-check-label">
+		<input type="radio" name="availability_auto" value="Vacant" checked class="form-check-input">Vacant<br>
+  </label>
+								</div>
+								<div class="form-check">
+									<label class="form-check-label">
+      <input type="radio" name="availability_auto" value="Filled" class="form-check-input">Filled<br>
+  </label>
+								</div>
+
+								<br>
+								<div class="btn-center">
+									<input type="submit" value="Submit" class="btn btn-dark">
+  </div>
+
+
+							</form>
+
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-3">
+				<div class="row mb-4">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-header">Current Auto Count</div>
+							<div class=" card-body vh-25">
+								<p class=" card-text count" style="text-align:center">
+                                    {{total_count}}
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					 <div class="col-12">
+						<!-- <div class="card"> -->
+							<!-- <div class="card-header">Trend</div> -->
+							<!-- <div class=" card-body vh-25"> -->
+								<img src="https://storage.cloud.google.com/staging.chat-application-240408.appspot.com/images_map/Trend_new.PNG  ">
+							<!-- </div> -->
+						<!-- </div> -->
+					</div> 
+				</div>
+			</div>
+			<div class="col-3">
+				<div class="row mb-4">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-header">Current Vacant Auto Count</div>
+							<div class=" card-body vh-25">
+								<p class=" card-text count" style="text-align:center">
+                                    {{vacant_auto}}
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- <div class="row">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-header">Header</div>
+							<div class=" card-body vh-25">
+								<h5 class=" card-title">Dark card title</h5>
+								<p class=" card-text">Some quick example
+								</p>
+							</div>
+						</div>
+					</div>
+
+				</div> -->
+			</div>
+		</div>
+        <div class="row mb-30 mt-30">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header">Most Busy Path</div>
+					<div class="card-body">
+						<p class=" card-text">
+                    <img style="width:100%" src="https://storage.cloud.google.com/staging.chat-application-240408.appspot.com/images_map/GIS.JPG">
+						</p>
+					</div>
+				</div>
+            </div>
+        </div>
+	</div>
+
+</body>
+
+</html>
+
+
+<!-- <html>
+    
+<head></head>
+<style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+<title>Auto-Rickshaw Tracking System</title>
+<style>
+     
+</style>
+    
+<body>
+
+    <h2>Admin Panel</h2>
+
+<form id="update_auto" action="/admin_home" method="post">
+<table>
+  <tr>
+    <th>Auto Number</th>
+    <th>Auto Path</th>
+    <th>Current Location</th>
+    <th>New Location</th>
+    <th>Is Vacant</th>
+  </tr>
+  {% for auto in data_auto %}
+  <tr>
+    <td>{{auto.auto_number}}</td>
+    <td>{{auto.path}}</td>
+    <td>{{auto.current_rfid}}</td>
+    <td>
+        <select name='{{auto.auto_number}}_rfid' value>
+            <option value>Select</option>
+            {%for i in data_rfid%}    
+            <option value='{{i.rfid_name}}'>{{i.rfid_name}}</option>
+            {% endfor%}
+        </select>
+    </td>
+    <td>
+        <div>
+            {%if auto.availability == "Vacant"%}
+            <input type="radio" name="{{auto.auto_number}}_availability" value="Vacant" checked>Vacant<br>
+            <input type="radio" name="{{auto.auto_number}}_availability" value="Filled">Filled<br>
+            {%else%}
+            <input type="radio" name="{{auto.auto_number}}_availability" value="Vacant" >Vacant<br>
+            <input type="radio" name="{{auto.auto_number}}_availability" value="Filled" checked>Filled<br>
+            {%endif%}
+
+        </div>
+    </td>
+  </tr>
+  {% endfor%}
+  </table>
+  <input type="submit"  name="submit" value="submit" />
+</form>
+
+
+<br>
+<hr>
+    <h3>Add RFIDs</h3>
+    <hr>
+<br>    
+<form id="rfid" action="/add_rfid" method="post">
+  RFID Name:<br>
+  <input type="text" name="rfid_name" placeholder="Enter RFID Name" required>
+  <br><br>
+  Location:<br>
+  <input type="text" name="rfid_location" placeholder="Enter RFID Location" required>
+  <br><br>
+  Latitude:<br>
+  <input type="text" name="rfid_latitude" placeholder="Latitude" required>
+  <br><br>
+  Longitude:<br>
+  <input type="text" name="rfid_longitude" placeholder="Longitude" required>
+  <br><br>
+  <input type="submit" value="Submit">
+</form> 
+<br>
+<hr>
+    <h3>Add Autos</h3>
+<hr>
+<br>    
+<form id="auto_add" action="/add_auto_new" method="post">
+  Auto Number:<br>
+  <input type="text" name="auto_number" placeholder="Enter Auto Number" required>
+  <br><br>
+  
+  Availability:<br>
+  <input type="radio" name="availability_auto" value="Vacant" checked >Vacant<br>
+  <input type="radio" name="availability_auto" value="Filled" >Filled<br>
+  <br><br>
+  <input type="submit" value="Submit">
+</form> 
+
+</body>
+</html> -->
